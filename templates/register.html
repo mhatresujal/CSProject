@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Create Account</h1>
+    <p style="color:#94a3b8;">Register securely using hashing & salting</p>
+
+    <form method="POST" class="form-box">
+
+        <input type="text" name="username" placeholder="Enter Username" required>
+
+        <input type="password" name="password" placeholder="Enter Password" required id="password">
+
+        <!-- Password strength -->
+        <p id="strength"></p>
+
+        <button type="submit">Register</button>
+    </form>
+
+    {% if message %}
+        <div class="message">{{ message }}</div>
+    {% endif %}
+
+    <br>
+    <a href="/" class="back-link">← Back to Home</a>
+
+</div>
+
+<script>
+let passwordInput = document.getElementById("password");
+let strengthText = document.getElementById("strength");
+
+passwordInput.addEventListener("input", () => {
+    let val = passwordInput.value;
+
+    if (val.length < 6) {
+        strengthText.innerText = "Weak password";
+        strengthText.style.color = "red";
+    } else if (/[A-Z]/.test(val) && /\d/.test(val)) {
+        strengthText.innerText = "Strong password";
+        strengthText.style.color = "lightgreen";
+    } else {
+        strengthText.innerText = "Medium password";
+        strengthText.style.color = "orange";
+    }
+});
+</script>
+
+</body>
+</html>

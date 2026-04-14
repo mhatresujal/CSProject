@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Login</h1>
+    <p style="color:#94a3b8;">Secure login with protection mechanisms</p>
+
+    <form method="POST" class="form-box">
+
+        <input type="text" name="username" placeholder="Enter Username" required>
+
+        <input type="password" id="password" name="password" placeholder="Enter Password" required>
+
+        <button type="submit" id="loginBtn">Login</button>
+    </form>
+
+    {% if message %}
+        <div class="message">{{ message }}</div>
+    {% endif %}
+
+    <p id="timer"></p>
+
+    <br>
+    <a href="/" class="back-link">← Back to Home</a>
+
+</div>
+
+<script>
+let waitTime = Number("{{ delay }}");
+
+if (waitTime > 0) {
+    let passwordField = document.getElementById("password");
+    let loginBtn = document.getElementById("loginBtn");
+    let timer = document.getElementById("timer");
+
+    passwordField.disabled = true;
+    loginBtn.disabled = true;
+
+    let interval = setInterval(() => {
+        timer.innerText = "Please wait " + waitTime + " seconds...";
+        waitTime--;
+
+        if (waitTime < 0) {
+            clearInterval(interval);
+            passwordField.disabled = false;
+            loginBtn.disabled = false;
+            timer.innerText = "";
+        }
+    }, 1000);
+}
+</script>
+
+</body>
+</html>
