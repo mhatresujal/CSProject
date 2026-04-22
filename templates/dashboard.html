@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="page-container">
+    <section class="panel">
+        <div class="header-row">
+            <div>
+                <h1>Dashboard</h1>
+                <p class="subtext">Account verified and authenticated</p>
+            </div>
+            <div>
+                <span class="status-pill {{ session_status|lower }}">{{ session_status }}</span>
+                <p style="margin: 8px 0; font-size: 0.9rem;"><strong>Session Token:</strong></p>
+                <p style="margin: 4px 0; font-family: monospace; font-size: 0.85rem; word-break: break-all;">{{ session_token }}</p>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab(event, 0)">Overview</button>
+            <button class="tab" onclick="switchTab(event, 1)">Activity Log</button>
+        </div>
+
+        <div class="tab-panel active">
+            <div class="card-grid">
+                <div class="card">
+                    <h2 style="margin-top: 0;">Account Overview</h2>
+                    <p><strong>Username:</strong> {{ username }}</p>
+                    <p><strong>Account Status:</strong> {{ account_status }}</p>
+                    <p><strong>Attempts Count:</strong> {{ attempts }}/3</p>
+                    <p><strong>Last Login Time:</strong> {{ last_login|datetimeformat if last_login else 'Never' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-panel">
+            <div class="card">
+                <h2>Activity Log</h2>
+                <ul>
+                    {% for event in history[-10:] %}
+                        <li>{{ event.time|datetimeformat }} - {{ event.event|replace('login_success', 'Login successful')|replace('login_failed_1', 'Failed attempt')|replace('login_failed_2', 'Failed attempt')|replace('login_failed_3', 'Failed attempt')|replace('account_locked', 'Account locked')|replace('password_reset', 'Password reset')|replace('registered', 'Account registered') }}</li>
+                    {% else %}
+                        <li>No activity yet</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <a href="/logout" class="back-link">Logout</a>
+    </section>
+</div>
+
+<script>
+function switchTab(event, index) {
+    event.preventDefault();
+    const tabs = document.querySelectorAll('.tab');
+    const panels = document.querySelectorAll('.tab-panel');
+    
+    tabs.forEach(t => t.classList.remove('active'));
+    panels.forEach(p => p.classList.remove('active'));
+    
+    tabs[index].classList.add('active');
+    panels[index].classList.add('active');
+}
+</script>
+</body>
+</html>

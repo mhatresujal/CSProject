@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verify Account</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="page-container">
+    <section class="panel">
+        <h1>Two-Factor Authentication</h1>
+        <p class="subtext">Verify your account with a one-time password</p>
+
+        <div class="card">
+            <p><strong>Account:</strong> {{ username }}</p>
+            <p><strong>Status:</strong> {{ account_status }}</p>
+        </div>
+
+        <form method="POST" class="form-box">
+            <button name="action" value="send" type="submit" class="primary">Request OTP</button>
+        </form>
+
+        {% if otp_code %}
+            <div class="card" style="background: #d4edda; border-color: #c3e6cb;">
+                <p style="margin: 0; color: #155724;">Your verification code:</p>
+                <div class="totp-code" style="color: #155724; margin: 12px 0;">{{ otp_code }}</div>
+                <p style="margin: 0; color: #155724; font-size: 0.9rem;">Expires in <span id="countdown">{{ otp_ttl }}</span>s</p>
+            </div>
+        {% endif %}
+
+        <form method="POST" class="form-box">
+            <input type="text" name="otp_code" placeholder="Enter 6-digit code" maxlength="6" pattern="[0-9]{6}" required>
+            <button type="submit" name="action" value="verify" class="primary">Verify</button>
+        </form>
+
+        {% if message %}
+            <div class="message">{{ message }}</div>
+        {% endif %}
+
+        <div class="card-grid">
+            <div class="card">
+                <h2 style="margin-top: 0;">Time-Based Code</h2>
+                <div class="totp-code">{{ live_totp }}</div>
+                <p class="small">Updates every 30 seconds</p>
+            </div>
+        </div>
+
+        <a href="/" class="back-link">← Back</a>
+    </section>
+</div>
+
+<script>
+let remaining = {{ otp_ttl | default(0) }};
+if (remaining > 0) {
+    const countdown = document.getElementById('countdown');
+    const interval = setInterval(() => {
+        remaining -= 1;
+        countdown.innerText = remaining;
+        if (remaining <= 0) {
+            clearInterval(interval);
+        }
+    }, 1000);
+}
+</script>
+</body>
+</html>

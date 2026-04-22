@@ -5,45 +5,57 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+<div class="page-container">
+    <section class="panel">
+        <h1>Login</h1>
+        <p class="subtext">Enter your credentials to continue</p>
 
-<div class="container">
+        <form method="POST" class="form-box">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" id="password" name="password" placeholder="Password" required>
+            <button type="submit" id="loginBtn" class="primary">Login</button>
+        </form>
 
-    <h1>Login</h1>
-    <p style="color:#94a3b8;">Secure login with protection mechanisms</p>
+        {% if message %}
+            <div class="message">{{ message }}</div>
+        {% endif %}
 
-    <form method="POST" class="form-box">
+        {% if message and "Account locked" in message %}
+            <div class="card">
+                <h3>Account Recovery Options</h3>
+                <p>Your account has been locked due to multiple failed login attempts.</p>
+                <div class="recovery-options">
+                    <button onclick="alert('Contact support at support@bank.com')">Contact Bank Support</button>
+                    <button onclick="resetMPIN()">Reset MPIN</button>
+                    <button onclick="resetByOTP()">Reset by OTP</button>
+                    <button id="resetPasswordBtn" disabled onclick="goToResetPassword()">Reset Password</button>
+                    <p id="resetTimer">Reset password available in 120 seconds</p>
+                </div>
+            </div>
+        {% endif %}
 
-        <input type="text" name="username" placeholder="Enter Username" required>
+        <div class="status-row">
+            <div>Attempts: <strong>{{ attempts }}/3</strong></div>
+            <div>Remaining: <strong>{{ remaining }}</strong></div>
+        </div>
 
-        <input type="password" id="password" name="password" placeholder="Enter Password" required>
-
-        <button type="submit" id="loginBtn">Login</button>
-    </form>
-
-    {% if message %}
-        <div class="message">{{ message }}</div>
-    {% endif %}
-
-    <p id="timer"></p>
-
-    <br>
-    <a href="/" class="back-link">← Back to Home</a>
-
+        <div id="timer"></div>
+        <a href="/" class="back-link">? Back</a>
+    </section>
 </div>
 
 <script>
 let waitTime = Number("{{ delay }}");
-
 if (waitTime > 0) {
-    let passwordField = document.getElementById("password");
-    let loginBtn = document.getElementById("loginBtn");
-    let timer = document.getElementById("timer");
+    const passwordField = document.getElementById("password");
+    const loginBtn = document.getElementById("loginBtn");
+    const timer = document.getElementById("timer");
 
     passwordField.disabled = true;
     loginBtn.disabled = true;
 
-    let interval = setInterval(() => {
-        timer.innerText = "Please wait " + waitTime + " seconds...";
+    const interval = setInterval(() => {
+        timer.innerText = `Wait ${waitTime} second${waitTime !== 1 ? 's' : ''}`;
         waitTime--;
 
         if (waitTime < 0) {
@@ -54,7 +66,36 @@ if (waitTime > 0) {
         }
     }, 1000);
 }
-</script>
 
+// Reset Password Timer (only if account is locked)
+const resetBtn = document.getElementById("resetPasswordBtn");
+if (resetBtn) {
+    let resetCountdown = 120;
+    const resetTimerDisplay = document.getElementById("resetTimer");
+    
+    const resetInterval = setInterval(() => {
+        resetCountdown--;
+        if (resetCountdown <= 0) {
+            clearInterval(resetInterval);
+            resetBtn.disabled = false;
+            resetTimerDisplay.innerText = "Reset password now available";
+        } else {
+            resetTimerDisplay.innerText = `Reset password available in ${resetCountdown} second${resetCountdown !== 1 ? 's' : ''}`;
+        }
+    }, 1000);
+}
+
+function goToResetPassword() {
+    window.location.href = "/reset-password";
+}
+
+function resetMPIN() {
+    alert("MPIN reset functionality not implemented in demo");
+}
+
+function resetByOTP() {
+    alert("OTP reset functionality not implemented in demo");
+}
+</script>
 </body>
 </html>
